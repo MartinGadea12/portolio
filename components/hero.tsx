@@ -51,11 +51,12 @@ export function Hero() {
   };
 
   return (
-    <header className="sticky top-0 left-0 flex flex-col justify-between h-screen py-16 lg:py-24">
+    <header className="sticky top-0 left-0 flex h-screen flex-col overflow-hidden py-16 lg:py-20">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="shrink-0"
       >
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           {profile.name}
@@ -85,52 +86,54 @@ export function Hero() {
           <LanguageToggle />
           <ThemeToggle />
         </motion.div>
-
-        <nav
-          className="mt-16 hidden lg:block"
-          aria-label={t.hero.navAria}
-        >
-          <motion.ul
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-            className="flex flex-col gap-6"
-          >
-            {navigation.map((item, index) => (
-              <motion.li
-                key={item.href}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
-              >
-                <a
-                  href={item.href}
-                  className={`group flex items-center gap-4 text-xs font-bold uppercase tracking-widest transition-colors ${
-                    activeSection === item.href
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <span
-                    className={`h-px transition-all ${
-                      activeSection === item.href
-                        ? "w-16 bg-foreground"
-                        : "w-8 bg-muted-foreground group-hover:w-16 group-hover:bg-foreground"
-                    }`}
-                  />
-                  {item.name}
-                </a>
-              </motion.li>
-            ))}
-          </motion.ul>
-        </nav>
       </motion.div>
+
+      <nav
+        className="mt-12 hidden shrink-0 lg:block"
+        aria-label={t.hero.navAria}
+      >
+        <motion.ul
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="flex flex-col gap-5"
+        >
+          {navigation.map((item, index) => (
+            <motion.li
+              key={item.href}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
+            >
+              <a
+                href={item.href}
+                className={`group flex items-center gap-4 text-xs font-bold uppercase tracking-widest transition-colors ${
+                  activeSection === item.href
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span
+                  className={`h-px transition-all ${
+                    activeSection === item.href
+                      ? "w-16 bg-foreground"
+                      : "w-8 bg-muted-foreground group-hover:w-16 group-hover:bg-foreground"
+                  }`}
+                />
+                {item.name}
+              </a>
+            </motion.li>
+          ))}
+        </motion.ul>
+      </nav>
+
+      <div className="min-h-10 flex-1 lg:min-h-14" aria-hidden="true" />
 
       <motion.ul
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
-        className="flex items-center gap-5"
+        className="flex shrink-0 items-center gap-5 pt-2"
         aria-label={t.hero.socialAria}
       >
         {socials.map((social, index) => (
