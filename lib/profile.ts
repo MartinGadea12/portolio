@@ -21,9 +21,9 @@ export const aboutParagraphs = [
 
 export const experiences = [
   {
-    period: "Jun 2023 — Actualidad",
+    period: "Jun 2023 — Feb 2026",
     title: "Full Stack Developer",
-    company: "DaiOff",
+    company: "Tech AI Solution",
     companyUrl: "#",
     description:
       "Desarrollo de plataformas web impulsadas con inteligencia artificial. Implementación frontend con React (Remix) y TypeScript, backend con Node.js y Prisma, integración de APIs y lógica de negocio en entorno remoto y ágil.",

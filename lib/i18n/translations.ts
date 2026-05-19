@@ -117,7 +117,7 @@ export const translations: Record<Locale, TranslationSchema> = {
     },
     experiences: [
       {
-        period: "Jun 2023 — Actualidad",
+        period: "Jun 2023 — Feb 2026",
         title: "Full Stack Developer",
         description:
           "Desarrollo de plataformas web impulsadas con inteligencia artificial. Implementación frontend con React (Remix) y TypeScript, backend con Node.js y Prisma, integración de APIs y lógica de negocio en entorno remoto y ágil.",
@@ -263,7 +263,7 @@ export const translations: Record<Locale, TranslationSchema> = {
     },
     experiences: [
       {
-        period: "Jun 2023 — Present",
+        period: "Jun 2023 — Feb 2026",
         title: "Full Stack Developer",
         description:
           "Development of AI-powered web platforms. Frontend with React (Remix) and TypeScript, backend with Node.js and Prisma, API integration and business logic in a remote, agile environment.",

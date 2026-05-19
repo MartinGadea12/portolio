@@ -6,7 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 import {
   experiences,
@@ -20,20 +20,47 @@ import { defaultLocale } from "@/lib/i18n/types";
 import { translations, type TranslationSchema } from "@/lib/i18n/translations";
 
 const STORAGE_KEY = "portfolio-locale";
+const LOCALE_CHANGE_EVENT = "portfolio-locale-change";
+
+type LocalizedExperience = {
+  period: string;
+  title: string;
+  company: string;
+  companyUrl: string;
+  description: string;
+  technologies: readonly string[];
+};
+
+type LocalizedProject = {
+  title: string;
+  description: string;
+  technologies: readonly string[];
+  link: string;
+  github: string;
+  image: string;
+  featured: boolean;
+};
+
+type LocalizedSkillCategory = {
+  title: string;
+  skills: readonly string[];
+};
+
+type LocalizedEducation = {
+  title: string;
+  institution: string;
+  period: string;
+};
 
 type LanguageContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   t: TranslationSchema;
-  experiences: (typeof experiences)[number] & {
-    period: string;
-    title: string;
-    description: string;
-  }[];
-  projects: (typeof projects)[number] & { description: string }[];
-  skillCategories: (typeof skillCategories)[number] & { title: string }[];
+  experiences: LocalizedExperience[];
+  projects: LocalizedProject[];
+  skillCategories: LocalizedSkillCategory[];
   stats: { value: string; label: string }[];
-  education: (typeof educationMeta)[number] & { title: string }[];
+  education: LocalizedEducation[];
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -44,52 +71,65 @@ function readStoredLocale(): Locale {
   return stored === "en" || stored === "es" ? stored : defaultLocale;
 }
 
+function subscribeLocale(onStoreChange: () => void) {
+  const handler = () => onStoreChange();
+  window.addEventListener("storage", handler);
+  window.addEventListener(LOCALE_CHANGE_EVENT, handler);
+  return () => {
+    window.removeEventListener("storage", handler);
+    window.removeEventListener(LOCALE_CHANGE_EVENT, handler);
+  };
+}
+
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
-  const [mounted, setMounted] = useState(false);
+  const locale = useSyncExternalStore(
+    subscribeLocale,
+    readStoredLocale,
+    () => defaultLocale
+  );
 
   useEffect(() => {
-    setLocaleState(readStoredLocale());
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
     document.documentElement.lang = locale;
-    localStorage.setItem(STORAGE_KEY, locale);
-  }, [locale, mounted]);
+  }, [locale]);
 
   const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
+    localStorage.setItem(STORAGE_KEY, next);
+    window.dispatchEvent(new Event(LOCALE_CHANGE_EVENT));
   }, []);
 
   const t = translations[locale];
 
   const value = useMemo<LanguageContextValue>(() => {
-    const localizedExperiences = experiences.map((exp, i) => ({
-      ...exp,
-      ...t.experiences[i],
-    }));
+    const localizedExperiences: LocalizedExperience[] = experiences.map(
+      (exp, i) => ({
+        ...exp,
+        ...t.experiences[i],
+      })
+    );
 
-    const localizedProjects = projects.map((project, i) => ({
+    const localizedProjects: LocalizedProject[] = projects.map((project, i) => ({
       ...project,
       description: t.projects[i]?.description ?? project.description,
     }));
 
-    const localizedSkills = skillCategories.map((cat, i) => ({
-      ...cat,
-      title: t.skillCategories[i]?.title ?? cat.title,
-    }));
+    const localizedSkills: LocalizedSkillCategory[] = skillCategories.map(
+      (cat, i) => ({
+        ...cat,
+        title: t.skillCategories[i]?.title ?? cat.title,
+      })
+    );
 
     const localizedStats = stats.map((stat, i) => ({
       value: stat.value,
       label: t.stats[i]?.label ?? stat.label,
     }));
 
-    const localizedEducation = educationMeta.map((item, i) => ({
-      ...item,
-      title: t.education[i]?.title ?? item.title,
-    }));
+    const localizedEducation: LocalizedEducation[] = educationMeta.map(
+      (item, i) => ({
+        ...item,
+        title: t.education[i]?.title ?? item.title,
+      })
+    );
 
     return {
       locale,
